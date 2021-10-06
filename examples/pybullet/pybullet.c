@@ -4873,6 +4873,8 @@ static PyObject* pybullet_resetJointStatesMultiDof(PyObject* self, PyObject* arg
 	return Py_None;
 }
 
+#include <stdio.h>
+
 // Initalize all joint positions given a list of values
 static PyObject* pybullet_resetJointStateMultiDof(PyObject* self, PyObject* args, PyObject* keywds)
 {
@@ -4886,6 +4888,8 @@ static PyObject* pybullet_resetJointStateMultiDof(PyObject* self, PyObject* args
 		int targetVelocitySize = 0;
 		PyObject* targetPositionObj = 0;
 		PyObject* targetVelocityObj = 0;
+
+                fprintf(stderr,"in pybullet_resetJointStateMultiDof");                
 
 		int physicsClientId = 0;
 		static char* kwlist[] = {"bodyUniqueId", "jointIndex", "targetValue", "targetVelocity", "physicsClientId", NULL};
@@ -4907,6 +4911,7 @@ static PyObject* pybullet_resetJointStateMultiDof(PyObject* self, PyObject* args
 			targetPositionSeq = PySequence_Fast(targetPositionObj, "expected a targetPosition sequence");
 			targetPositionSize = PySequence_Size(targetPositionObj);
 
+
 			if (targetPositionSize < 0)
 			{
 				targetPositionSize = 0;
@@ -4920,6 +4925,7 @@ static PyObject* pybullet_resetJointStateMultiDof(PyObject* self, PyObject* args
 				for (i = 0; i < targetPositionSize; i++)
 				{
 					targetPositionArray[i] = pybullet_internalGetFloatFromSequence(targetPositionSeq, i);
+                                        
 				}
 				Py_DECREF(targetPositionSeq);
 			}
@@ -4931,6 +4937,7 @@ static PyObject* pybullet_resetJointStateMultiDof(PyObject* self, PyObject* args
 			PyObject* targetVelocitySeq = 0;
 			targetVelocitySeq = PySequence_Fast(targetVelocityObj, "expected a targetVelocity sequence");
 			targetVelocitySize = PySequence_Size(targetVelocityObj);
+                        fprintf(stderr," targetVelocitysize %d", targetVelocitySize );                                                          
 
 			if (targetVelocitySize < 0)
 			{
@@ -5498,17 +5505,18 @@ static PyObject* pybullet_getJointStateMultiDof(PyObject* self, PyObject* args, 
 				PyTuple_SetItem(pyListJointState, 0, pyListPosition);
 				PyTuple_SetItem(pyListJointState, 1, pyListVelocity);
 
+
 				for (i = 0; i < sensorState.m_qDofSize; i++)
 				{
 					PyTuple_SetItem(pyListPosition, i,
 									PyFloat_FromDouble(sensorState.m_jointPosition[i]));
+                                        
 				}
 
 				for (i = 0; i < sensorState.m_uDofSize; i++)
 				{
 					PyTuple_SetItem(pyListVelocity, i,
 									PyFloat_FromDouble(sensorState.m_jointVelocity[i]));
-
 					PyTuple_SetItem(pyListJointMotorTorque, i,
 									PyFloat_FromDouble(sensorState.m_jointMotorTorqueMultiDof[i]));
 				}

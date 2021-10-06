@@ -11008,6 +11008,8 @@ bool PhysicsServerCommandProcessor::processInitPoseCommand(const struct SharedMe
 			{
 				int posVarCount = mb->getLink(i).m_posVarCount;
 				bool hasPosVar = posVarCount > 0;
+                                if(mb->getLink(i).m_jointType == btMultibodyLink::ePlanar) mb->getLink(i).m_dofCount = 3 ;
+                                if(mb->getLink(i).m_jointType == btMultibodyLink::ePlanar) mb->getLink(i).m_dofOffset = 0;                          
 
 				for (int j = 0; j < posVarCount; j++)
 				{
@@ -11050,12 +11052,12 @@ bool PhysicsServerCommandProcessor::processInitPoseCommand(const struct SharedMe
 
 				if (hasVel)
 				{
-					if (mb->getLink(i).m_dofCount == 1)
+                                  if (mb->getLink(i).m_dofCount == 1)
 					{
 						btScalar vel = clientCmd.m_initPoseArgs.m_initialStateQdot[uDofIndex];
 						mb->setJointVel(i, vel);
 					}
-					if (mb->getLink(i).m_dofCount == 3)
+                                        if (mb->getLink(i).m_dofCount == 3)  
 					{
 						mb->setJointVelMultiDof(i, &clientCmd.m_initPoseArgs.m_initialStateQdot[uDofIndex]);
 					}
@@ -11065,6 +11067,43 @@ bool PhysicsServerCommandProcessor::processInitPoseCommand(const struct SharedMe
 				uDofIndex += mb->getLink(i).m_dofCount;
 			}
 		}
+		if (clientCmd.m_updateFlags & INIT_POSE_HAS_JOINT_VELOCITY)
+		{
+                  fprintf(stderr,"INIT_POSE_HAS_JOINT_VELOCITY was not  implemented -- TB hack for now \n");
+                  if(1){
+			int uDofIndex = 6;
+			for (int i = 0; i < mb->getNumLinks(); i++)
+			{
+                          bool hasVel = true;
+                          // TB hack
+                          if(mb->getLink(i).m_jointType == btMultibodyLink::ePlanar) mb->getLink(i).m_dofCount = 3 ;
+                          if(mb->getLink(i).m_jointType == btMultibodyLink::ePlanar) mb->getLink(i).m_dofOffset = 0;                          
+                          for (int j = 0; j < mb->getLink(i).m_dofCount ; j++)
+                            {
+                              if (clientCmd.m_initPoseArgs.m_hasInitialStateQdot[uDofIndex + j] == 0)
+                                {
+                                  hasVel = false;
+                                  break;
+                                }
+                            }
+
+                          if (hasVel)
+                            {
+                              if (mb->getLink(i).m_dofCount == 1)
+                                {
+                                  btScalar vel = clientCmd.m_initPoseArgs.m_initialStateQdot[uDofIndex];
+                                  mb->setJointVel(i, vel);
+                                }
+                              if (mb->getLink(i).m_dofCount <= 3)
+                                {
+                                  mb->setJointVelMultiDof(i, &clientCmd.m_initPoseArgs.m_initialStateQdot[uDofIndex]);
+                                }
+                            }
+
+                          uDofIndex += mb->getLink(i).m_dofCount;
+			}
+                  }
+		}                
 
 		btAlignedObjectArray<btQuaternion> scratch_q;
 		btAlignedObjectArray<btVector3> scratch_m;

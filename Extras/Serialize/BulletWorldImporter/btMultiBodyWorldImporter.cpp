@@ -160,7 +160,13 @@ void syncMultiBody(T* mbd, btMultiBody* mb, btMultiBodyWorldImporterInternalData
 			}
 			case btMultibodyLink::ePlanar:
 			{
-				break;
+                          fprintf(stderr,"TB HACK... Called multibodylink with unsupported eplanar joint\n\n");
+                          btScalar jointPos[2] = {(btScalar)mbd->m_links[i].m_jointPos[0], (btScalar)mbd->m_links[i].m_jointPos[1]};
+                          btScalar jointVel[2] = {(btScalar)mbd->m_links[i].m_jointVel[0], (btScalar)mbd->m_links[i].m_jointVel[1]};
+                          mb->setJointPosMultiDof(i, jointPos);
+                          mb->setJointVelMultiDof(i, jointVel);
+                          
+                          break;
 			}
 			default:
 			{

@@ -186,6 +186,10 @@ bool PhysicsClientSharedMemory::getJointInfo(int bodyUniqueId, int jointIndex, b
 				{
 					info.m_qSize = 2;
 					info.m_uSize = 2;
+                                        //TB Hack  trying to get reset/copy to work
+                                        info.m_qSize = 3;
+                                        info.m_uSize = 3;                                        
+                                        
 					break;
 				}
 				case ePrismaticType:
