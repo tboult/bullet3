@@ -439,12 +439,14 @@ void btMultiBody::setJointVelMultiDof(int i, const double *qdot)
 {
 	for (int dof = 0; dof < m_links[i].m_dofCount; ++dof)
 		m_realBuf[6 + m_links[i].m_dofOffset + dof] = (btScalar)qdot[dof];
+	m_links[i].updateCacheMultiDof();        
 }
 
 void btMultiBody::setJointVelMultiDof(int i, const float* qdot)
 {
 	for (int dof = 0; dof < m_links[i].m_dofCount; ++dof)
 		m_realBuf[6 + m_links[i].m_dofOffset + dof] = (btScalar)qdot[dof];
+	m_links[i].updateCacheMultiDof();        
 }
 
 const btVector3 &btMultiBody::getRVector(int i) const

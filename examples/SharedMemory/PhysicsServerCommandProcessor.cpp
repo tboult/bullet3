@@ -11028,15 +11028,22 @@ bool PhysicsServerCommandProcessor::processInitPoseCommand(const struct SharedMe
 					}
 					if (mb->getLink(i).m_dofCount == 3)
 					{
-						btQuaternion q(
-							clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex],
-							clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex + 1],
-							clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex + 2],
-							clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex + 3]);
-						q.normalize();
-						mb->setJointPosMultiDof(i, &q[0]);
-						double vel[6] = {0, 0, 0, 0, 0, 0};
-						mb->setJointVelMultiDof(i, vel);
+                                          if(mb->getLink(i).m_jointType == btMultibodyLink::eSpherical) {
+                                            btQuaternion q(
+                                                           clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex],
+                                                           clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex + 1],
+                                                           clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex + 2],
+                                                           clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex + 3]);
+                                            q.normalize();
+                                            mb->setJointPosMultiDof(i, &q[0]);
+                                            double vel[6] = {0, 0, 0, 0, 0, 0};
+                                            mb->setJointVelMultiDof(i, vel);
+                                          } else  if(mb->getLink(i).m_jointType == btMultibodyLink::ePlanar) {
+                                            //TB hack to fix planar joints
+                                            double pos[3];
+                                            for(int j=0;j<3; j++) pos[j]= clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex+j];
+                                            mb->setJointPosMultiDof(i, pos);
+                                          }
 					}
 				}
 
