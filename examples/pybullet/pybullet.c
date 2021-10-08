@@ -4889,7 +4889,6 @@ static PyObject* pybullet_resetJointStateMultiDof(PyObject* self, PyObject* args
 		PyObject* targetPositionObj = 0;
 		PyObject* targetVelocityObj = 0;
 
-                fprintf(stderr,"in pybullet_resetJointStateMultiDof");                
 
 		int physicsClientId = 0;
 		static char* kwlist[] = {"bodyUniqueId", "jointIndex", "targetValue", "targetVelocity", "physicsClientId", NULL};
@@ -4937,7 +4936,6 @@ static PyObject* pybullet_resetJointStateMultiDof(PyObject* self, PyObject* args
 			PyObject* targetVelocitySeq = 0;
 			targetVelocitySeq = PySequence_Fast(targetVelocityObj, "expected a targetVelocity sequence");
 			targetVelocitySize = PySequence_Size(targetVelocityObj);
-                        fprintf(stderr," targetVelocitysize %d", targetVelocitySize );                                                          
 
 			if (targetVelocitySize < 0)
 			{
