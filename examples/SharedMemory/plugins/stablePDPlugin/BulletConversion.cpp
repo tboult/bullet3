@@ -388,7 +388,7 @@ void btExtractJointBodyFromBullet(const btMultiBody* bulletMB, Eigen::MatrixXd& 
 			}
 			case btMultibodyLink::ePlanar:
 			{
-				dofCount = 4;//?? TB hack
+				dofCount = 3;//?? TB hack, was not defined
 				jointType = cKinTree::eJointTypePlanar;
 				break;
 			}
