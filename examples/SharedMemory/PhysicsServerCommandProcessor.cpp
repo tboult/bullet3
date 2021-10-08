@@ -11002,142 +11002,135 @@ bool PhysicsServerCommandProcessor::processInitPoseCommand(const struct SharedMe
 		}
 		if (clientCmd.m_updateFlags & INIT_POSE_HAS_JOINT_STATE)
                   {
-                   int uDofIndex = 6;
-                   int posVarCountIndex = 7;
-                   for (int i = 0; i < mb->getNumLinks(); i++)
-                   {
-                     //                     fprintf(stderr,"Process init for %10s", mb->getLink(i).m_jointName);
-                    int posVarCount = mb->getLink(i).m_posVarCount;
-                    bool hasPosVar = posVarCount > 0;
-                                //                                if(mb->getLink(i).m_jointType == btMultibodyLink::ePlanar) mb->getLink(i).m_dofCount = 3 ;
-                                //                                if(mb->getLink(i).m_jointType == btMultibodyLink::ePlanar) mb->getLink(i).m_dofOffset = 0;                          
-
-                    for (int j = 0; j < posVarCount; j++)
-                    {
-                     if (clientCmd.m_initPoseArgs.m_hasInitialStateQ[posVarCountIndex + j] == 0)
-                     {
-                      hasPosVar = false;
-                      break;
-                      }
-                     }
-                    if (hasPosVar)
-                    {
-                     if (mb->getLink(i).m_dofCount == 1)
-                     {
-                      mb->setJointPos(i, clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex]);
-                      mb->setJointVel(i, 0); //backwards compatibility
-                      }
-                     if (mb->getLink(i).m_dofCount == 3)
-                     {
-                      if((mb->getLink(i).m_jointType == btMultibodyLink::eSpherical) && (0==strcmp("pole_to_cart",mb->getLink(i).m_jointName)))
+                    int uDofIndex = 6;
+                    int posVarCountIndex = 7;
+                    for (int i = 0; i < mb->getNumLinks(); i++)
                       {
-                                //TB hack to fix carpole/planar joint needing raw copy
-                       double pos[4];
-                       for(int j=0;j<4; j++) pos[j]= clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex+j];
-                       //                       fprintf(stderr,"\n TB raw 4d joint %lf %lf %lf %lf", pos[0],pos[1],pos[2],pos[3]);
-                       mb->setJointPosMultiDof(i, pos);
-                       } else  if(mb->getLink(i).m_jointType == btMultibodyLink::ePlanar)
-                      {
-                                //TB hack to fix planar joints
-                       double pos[3];
-                       for(int j=0;j<3; j++) pos[j]= clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex+j];
-                       mb->setJointPosMultiDof(i, pos);
-                       //                       fprintf(stderr,"\n TB raw 3 joint %lf %lf %lf", pos[0],pos[1],pos[2]);                       
-                       } else
-                      {
-                       btQuaternion q(
-                                      clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex],
-                                      clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex + 1],
-                                      clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex + 2],
-                                      clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex + 3]);
-                       q.normalize();
-                       mb->setJointPosMultiDof(i, &q[0]);
-                       //                       fprintf(stderr,"\n TB  4d quat joint %lf %lf %lf %lf", q[0],q[1],q[2],q[3]);
-                       double pos[4];
-                       for(int j=0;j<4; j++) pos[j]= clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex+j];
-                       //                       fprintf(stderr,"from raw 4d pos %lf %lf %lf %lf", pos[0],pos[1],pos[2],pos[3]);
-                       double vel[6] = {0, 0, 0, 0, 0, 0};
-                       mb->setJointVelMultiDof(i, vel);
-                       }
-                      }
-                    }
-
-                     bool hasVel = true;
-                     for (int j = 0; j < mb->getLink(i).m_dofCount; j++)
-                     {
-                      if (clientCmd.m_initPoseArgs.m_hasInitialStateQdot[uDofIndex + j] == 0)
-                      {
-                       hasVel = false;
-                       break;
-                       }
-                      }
-
-                     if (hasVel)
-                     {
-                      if (mb->getLink(i).m_dofCount == 1)
-                      {
-                       btScalar vel = clientCmd.m_initPoseArgs.m_initialStateQdot[uDofIndex];
-                       mb->setJointVel(i, vel);
-                       }
-                      if (mb->getLink(i).m_dofCount == 3)  
-                      {
-                       mb->setJointVelMultiDof(i, &clientCmd.m_initPoseArgs.m_initialStateQdot[uDofIndex]);
-                       }
-                      }
-
-                     posVarCountIndex += mb->getLink(i).m_posVarCount;
-                     uDofIndex += mb->getLink(i).m_dofCount;
-                     }
-                    }
-                   if (clientCmd.m_updateFlags & INIT_POSE_HAS_JOINT_VELOCITY)
-                   {
-                     //                    fprintf(stderr,"INIT_POSE_HAS_JOINT_VELOCITY was not  implemented -- TB hacked one for now \n");
-                          int uDofIndex = 6;
-                          for (int i = 0; i < mb->getNumLinks(); i++)
+                        //                     fprintf(stderr,"Process init for %10s", mb->getLink(i).m_jointName);
+                        int posVarCount = mb->getLink(i).m_posVarCount;
+                        bool hasPosVar = posVarCount > 0;
+                        for (int j = 0; j < posVarCount; j++)
                           {
-                           bool hasVel = true;
-                           for (int j = 0; j < mb->getLink(i).m_dofCount ; j++)
-                           {
-                            if (clientCmd.m_initPoseArgs.m_hasInitialStateQdot[uDofIndex + j] == 0)
-                            {
-                             hasVel = false;
-                             break;
-                             }
-                            }
-
-                           if (hasVel)
-                           {
+                            if (clientCmd.m_initPoseArgs.m_hasInitialStateQ[posVarCountIndex + j] == 0)
+                              {
+                                hasPosVar = false;
+                                break;
+                              }
+                          }
+                        if (hasPosVar)
+                          {
                             if (mb->getLink(i).m_dofCount == 1)
-                            {
-                             btScalar vel = clientCmd.m_initPoseArgs.m_initialStateQdot[uDofIndex];
-                             mb->setJointVel(i, vel);
-                             }
-                            if (mb->getLink(i).m_dofCount <= 3)
-                            {
-                             mb->setJointVelMultiDof(i, &clientCmd.m_initPoseArgs.m_initialStateQdot[uDofIndex]);
-                             }
-                            }
+                              {
+                                mb->setJointPos(i, clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex]);
+                                mb->setJointVel(i, 0); //backwards compatibility
+                              }
+                            if (mb->getLink(i).m_dofCount == 3)
+                              {
+                                if((mb->getLink(i).m_jointType == btMultibodyLink::eSpherical) && (0==strcmp("pole_to_cart",mb->getLink(i).m_jointName)))
+                                  {
+                                    //TB hack to fix carpole, copy of pole joint needing raw copy, not requaterion 
+                                    double pos[4];
+                                    for(int j=0;j<4; j++) pos[j]= clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex+j];
+                                    //                       fprintf(stderr,"\n TB raw 4d joint %lf %lf %lf %lf", pos[0],pos[1],pos[2],pos[3]);
+                                    mb->setJointPosMultiDof(i, pos);
+                                  } else  if(mb->getLink(i).m_jointType == btMultibodyLink::ePlanar)
+                                  {
+                                    //TB hack to fix planar joints, cannot make quaterions out of them
+                                    double pos[3];
+                                    for(int j=0;j<3; j++) pos[j]= clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex+j];
+                                    mb->setJointPosMultiDof(i, pos);
+                                    //                       fprintf(stderr,"\n TB raw 3 joint %lf %lf %lf", pos[0],pos[1],pos[2]);                       
+                                  } else
+                                  {
+                                    btQuaternion q(
+                                                   clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex],
+                                                   clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex + 1],
+                                                   clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex + 2],
+                                                   clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex + 3]);
+                                    q.normalize();
+                                    mb->setJointPosMultiDof(i, &q[0]);
+                                    double vel[6] = {0, 0, 0, 0, 0, 0};
+                                    mb->setJointVelMultiDof(i, vel);
+                                  }
+                              }
+                          }
+                        
+                        bool hasVel = true;
+                        for (int j = 0; j < mb->getLink(i).m_dofCount; j++)
+                          {
+                            if (clientCmd.m_initPoseArgs.m_hasInitialStateQdot[uDofIndex + j] == 0)
+                              {
+                                hasVel = false;
+                                break;
+                              }
+                          }
+                        
+                        if (hasVel)
+                          {
+                            if (mb->getLink(i).m_dofCount == 1)
+                              {
+                                btScalar vel = clientCmd.m_initPoseArgs.m_initialStateQdot[uDofIndex];
+                                mb->setJointVel(i, vel);
+                              }
+                            if (mb->getLink(i).m_dofCount == 3)  
+                              {
+                                mb->setJointVelMultiDof(i, &clientCmd.m_initPoseArgs.m_initialStateQdot[uDofIndex]);
+                              }
+                          }
+                        
+                        posVarCountIndex += mb->getLink(i).m_posVarCount;
+                        uDofIndex += mb->getLink(i).m_dofCount;
+                      }
+                  }
+                if (clientCmd.m_updateFlags & INIT_POSE_HAS_JOINT_VELOCITY)
+                  {
+                     //                    fprintf(stderr,"INIT_POSE_HAS_JOINT_VELOCITY was not  implemented -- TB hacked one for now \n");
+                    int uDofIndex = 6;
+                    for (int i = 0; i < mb->getNumLinks(); i++)
+                      {
+                        bool hasVel = true;
+                        for (int j = 0; j < mb->getLink(i).m_dofCount ; j++)
+                          {
+                            if (clientCmd.m_initPoseArgs.m_hasInitialStateQdot[uDofIndex + j] == 0)
+                              {
+                                hasVel = false;
+                                break;
+                              }
+                          }
+                        
+                        if (hasVel)
+                          {
+                            if (mb->getLink(i).m_dofCount == 1)
+                              {
+                                btScalar vel = clientCmd.m_initPoseArgs.m_initialStateQdot[uDofIndex];
+                                mb->setJointVel(i, vel);
+                              }
+                            if (mb->getLink(i).m_dofCount == 3)
+                              {
+                                mb->setJointVelMultiDof(i, &clientCmd.m_initPoseArgs.m_initialStateQdot[uDofIndex]);
+                              }
+                          }
+                        
+                        uDofIndex += mb->getLink(i).m_dofCount;
+                      }
+                  }                
 
-                           uDofIndex += mb->getLink(i).m_dofCount;
-                           }
-                    }                
+                btAlignedObjectArray<btQuaternion> scratch_q;
+                btAlignedObjectArray<btVector3> scratch_m;
 
-                   btAlignedObjectArray<btQuaternion> scratch_q;
-                   btAlignedObjectArray<btVector3> scratch_m;
-
-                   mb->forwardKinematics(scratch_q, scratch_m);
-                   int nLinks = mb->getNumLinks();
-                   scratch_q.resize(nLinks + 1);
-                   scratch_m.resize(nLinks + 1);
-
-                   mb->updateCollisionObjectWorldTransforms(scratch_q, scratch_m);
+                mb->forwardKinematics(scratch_q, scratch_m);
+                int nLinks = mb->getNumLinks();
+                scratch_q.resize(nLinks + 1);
+                scratch_m.resize(nLinks + 1);
+                
+                mb->updateCollisionObjectWorldTransforms(scratch_q, scratch_m);
 		
-                   m_data->m_dynamicsWorld->updateSingleAabb(mb->getBaseCollider());
-                   for (int i=0;i<mb->getNumLinks();i++)
-                   {
+                m_data->m_dynamicsWorld->updateSingleAabb(mb->getBaseCollider());
+                for (int i=0;i<mb->getNumLinks();i++)
+                  {
                     m_data->m_dynamicsWorld->updateSingleAabb(mb->getLinkCollider(i));
-                    }
-                   }
+                  }
+        }
 
 	if (body && body->m_rigidBody)
 	{
