@@ -1194,23 +1194,27 @@ void btMultiBody::computeAccelerationsArticulatedBodyAlgorithmMultiDof(btScalar 
 	output[4] = vdot_out[1];
 	output[5] = vdot_out[2];
 
-	/////////////////
-	//printf("q = [");
-	//printf("%.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f ", m_baseQuat.x(), m_baseQuat.y(), m_baseQuat.z(), m_baseQuat.w(), m_basePos.x(), m_basePos.y(), m_basePos.z());
-	//for(int link = 0; link < getNumLinks(); ++link)
-	//	for(int dof = 0; dof < m_links[link].m_dofCount; ++dof)
-	//		printf("%.6f ", m_links[link].m_jointPos[dof]);
-	//printf("]\n");
-	////
-	//printf("qd = [");
-	//for(int dof = 0; dof < getNumDofs() + 6; ++dof)
-	//	printf("%.6f ", m_realBuf[dof]);
-	//printf("]\n");
-	//printf("qdd = [");
-	//for(int dof = 0; dof < getNumDofs() + 6; ++dof)
-	//	printf("%.6f ", output[dof]);
-	//printf("]\n");
-	/////////////////
+
+	// for(int link = 0; link < getNumLinks(); ++link)
+        //   printf(" Link %d %s ",link,m_links[link].m_linkName);          
+
+	
+	// printf("q = [");
+	// printf("%.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f ", m_baseQuat.x(), m_baseQuat.y(), m_baseQuat.z(), m_baseQuat.w(), m_basePos.x(), m_basePos.y(), m_basePos.z());
+	// for(int link = 0; link < getNumLinks(); ++link)
+	// 	for(int dof = 0; dof < m_links[link].m_dofCount; ++dof)
+        //           printf("L %d %.6f ", link, m_links[link].m_jointPos[dof]);
+	// printf("]\n");
+	
+	// printf("qd = [");
+	// for(int dof = 0; dof < getNumDofs() + 6; ++dof)
+	// 	printf("buf=%.6f ", m_realBuf[dof]);
+	// printf("]\n");
+	// printf("qdd = [");
+	// for(int dof = 0; dof < getNumDofs() + 6; ++dof)
+	// 	printf("Out=%.6f ", output[dof]);
+	// printf("]\n");
+	
 
 	// Final step: add the accelerations (times dt) to the velocities.
 

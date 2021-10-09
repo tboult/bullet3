@@ -1573,7 +1573,7 @@ bool PhysicsDirect::getJointInfo(int bodyIndex, int jointIndex, struct b3JointIn
 				{
 					info.m_qSize = 2;
 					info.m_uSize = 2;
-                                        //TB Hack  trying to get reset/copy to work
+                                        //TB Hack  trying to get reset/copy to work  DOC is 3 and other diems are 3 so seems sizes should be 3
                                         info.m_qSize = 3;
                                         info.m_uSize = 3;                                        
 					break;

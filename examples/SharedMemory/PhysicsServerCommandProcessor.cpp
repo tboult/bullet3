@@ -11000,7 +11000,7 @@ bool PhysicsServerCommandProcessor::processInitPoseCommand(const struct SharedMe
 
 			mb->setWorldToBaseRot(invOrn.inverse());
 		}
-		if (clientCmd.m_updateFlags & INIT_POSE_HAS_JOINT_STATE)
+		if (clientCmd.m_updateFlags & (INIT_POSE_HAS_JOINT_STATE))
                   {
                     int uDofIndex = 6;
                     int posVarCountIndex = 7;
@@ -11028,19 +11028,19 @@ bool PhysicsServerCommandProcessor::processInitPoseCommand(const struct SharedMe
                               {
                                 if((mb->getLink(i).m_jointType == btMultibodyLink::eSpherical) && (0==strcmp("pole_to_cart",mb->getLink(i).m_jointName)))
                                   {
-                                    //TB hack to fix carpole, copy of pole joint needing raw copy, not requaterion 
+                                    //TB horrible hack to fix carpole, copy of pole joint needing raw copy, not requaterion  No cleary way to pass args this deep in a multi-threaded stamp-passing code, but shold eventually find a better solution
                                     double pos[4];
                                     for(int j=0;j<4; j++) pos[j]= clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex+j];
                                     //                       fprintf(stderr,"\n TB raw 4d joint %lf %lf %lf %lf", pos[0],pos[1],pos[2],pos[3]);
                                     mb->setJointPosMultiDof(i, pos);
                                   } else  if(mb->getLink(i).m_jointType == btMultibodyLink::ePlanar)
                                   {
-                                    //TB hack to fix planar joints, cannot make quaterions out of them
+                                    //TB  fix for planar joints, do NOT make quaterions out of them
                                     double pos[3];
                                     for(int j=0;j<3; j++) pos[j]= clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex+j];
                                     mb->setJointPosMultiDof(i, pos);
                                     //                       fprintf(stderr,"\n TB raw 3 joint %lf %lf %lf", pos[0],pos[1],pos[2]);                       
-                                  } else
+                                  } else // orginal code we make quaterion from arg
                                   {
                                     btQuaternion q(
                                                    clientCmd.m_initPoseArgs.m_initialStateQ[posVarCountIndex],
@@ -11082,38 +11082,7 @@ bool PhysicsServerCommandProcessor::processInitPoseCommand(const struct SharedMe
                         uDofIndex += mb->getLink(i).m_dofCount;
                       }
                   }
-                if (clientCmd.m_updateFlags & INIT_POSE_HAS_JOINT_VELOCITY)
-                  {
-                     //                    fprintf(stderr,"INIT_POSE_HAS_JOINT_VELOCITY was not  implemented -- TB hacked one for now \n");
-                    int uDofIndex = 6;
-                    for (int i = 0; i < mb->getNumLinks(); i++)
-                      {
-                        bool hasVel = true;
-                        for (int j = 0; j < mb->getLink(i).m_dofCount ; j++)
-                          {
-                            if (clientCmd.m_initPoseArgs.m_hasInitialStateQdot[uDofIndex + j] == 0)
-                              {
-                                hasVel = false;
-                                break;
-                              }
-                          }
-                        
-                        if (hasVel)
-                          {
-                            if (mb->getLink(i).m_dofCount == 1)
-                              {
-                                btScalar vel = clientCmd.m_initPoseArgs.m_initialStateQdot[uDofIndex];
-                                mb->setJointVel(i, vel);
-                              }
-                            if (mb->getLink(i).m_dofCount == 3)
-                              {
-                                mb->setJointVelMultiDof(i, &clientCmd.m_initPoseArgs.m_initialStateQdot[uDofIndex]);
-                              }
-                          }
-                        
-                        uDofIndex += mb->getLink(i).m_dofCount;
-                      }
-                  }                
+                //                if (clientCmd.m_updateFlags & INIT_POSE_HAS_JOINT_VELOCITY)  fprintf(stderr,"INIT_POSE_HAS_JOINT_VELOCITY was not  implemented .. but testing shows it seems to be covered by INIT_POSE_HAS_JOINT_STATE and doing twice breaks things \n");                
 
                 btAlignedObjectArray<btQuaternion> scratch_q;
                 btAlignedObjectArray<btVector3> scratch_m;
