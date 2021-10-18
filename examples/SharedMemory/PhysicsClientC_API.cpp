@@ -2558,7 +2558,7 @@ B3_SHARED_API int b3CreatePoseCommandSetJointVelocityMultiDof(b3PhysicsClientHan
 				command->m_initPoseArgs.m_initialStateQdot[info.m_uIndex + i] = jointVelocity[i];
 				command->m_initPoseArgs.m_hasInitialStateQdot[info.m_uIndex + i] = 1;
 			}
-		}
+		} 
 		
 	}
 	return 0;

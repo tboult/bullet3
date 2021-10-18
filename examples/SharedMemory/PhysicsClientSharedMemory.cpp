@@ -186,6 +186,10 @@ bool PhysicsClientSharedMemory::getJointInfo(int bodyUniqueId, int jointIndex, b
 				{
 					info.m_qSize = 2;
 					info.m_uSize = 2;
+                                        //TB Hack/fix  trying to get reset/copy to work,   DOf is 3 and other diems are 3 so seems sizes should be 3
+                                        info.m_qSize = 3;
+                                        info.m_uSize = 3;                                        
+                                        
 					break;
 				}
 				case ePrismaticType:

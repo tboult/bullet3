@@ -3311,6 +3311,7 @@ static PyObject* pybullet_setJointMotorControlMultiDof(PyObject* self, PyObject*
 		int i = 0;
 		targetPositionSeq = PySequence_Fast(targetPositionObj, "expected a targetPosition sequence");
 		targetPositionSize = PySequence_Size(targetPositionObj);
+                //                fprintf(stderr, "pybullet_setJointMotorControlMultiDof  poszie %d\n",targetPositionSize);
 
 		if (targetPositionSize < 0)
 		{
@@ -3336,6 +3337,7 @@ static PyObject* pybullet_setJointMotorControlMultiDof(PyObject* self, PyObject*
 		PyObject* targetVelocitySeq = 0;
 		targetVelocitySeq = PySequence_Fast(targetVelocityObj, "expected a targetVelocity sequence");
 		targetVelocitySize = PySequence_Size(targetVelocityObj);
+                //                fprintf(stderr, "pybullet_setJointMotorControlMultiDof  velsize %d\n",targetVelocitySize);
 
 		if (targetVelocitySize < 0)
 		{
